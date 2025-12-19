@@ -1,30 +1,101 @@
+const numBtns = document.querySelectorAll(".num-btn");
+const operatorBtns = document.querySelectorAll(".opr-btn");
+const resultBtn = document.querySelector(".result-btn");
+const clearBtn = document.querySelector(".ac-btn");
+const clearEntryBtn = document.querySelector(".ce-btn");
+const backspaceBtn = document.querySelector(".bs-btn");
+const display = document.querySelector(".cal-display");
+let isDisplayPopulated = true; // global boolean variable to check if the display is populated at the current moment or not
+
 function add(num1, num2) {
-    console.log(num1 + num2);
+    return num1 + num2;
 }
 
 function subtract(num1, num2) {
-    console.log(num1 - num2);
+    return num1 - num2;
 }
 
 function divide(num1, num2) {
-    console.log(num1 / num2);
+    // round upto 3 places
+    return Math.round((num1 / num2) * 1000) / 1000;
 }
 
 function multiply(num1, num2) {
-    console.log(num1 * num2);
+    // round upto 3 places
+    return Math.round(num1 * num2 * 1000) / 1000;
 }
 
 function operate(num1, num2, operator) {
-    if (operator === "+") add(num1, num2);
-    else if (operator === "-") subtract(num1, num2);
-    else if (operator === "*") multiply(num1, num2);
-    else if (operator === "/") divide(num1, num2);
-    else {
-        console.log("Please enter a valid operator");
+    let result;
+    if (operator === "+") {
+        result = add(num1, num2);
+    } else if (operator === "-") {
+        result = subtract(num1, num2);
+    } else if (operator === "*") {
+        result = multiply(num1, num2);
+    } else if (operator === "/") {
+        result = divide(num1, num2);
+    } else {
+        console.log("Wrong operator");
     }
+    return result;
 }
 
-// const regex = /[+-*/]/; there is no valid character range from + to * unlike [a-z]
-const regex = /([+/*-])/; // () using capturing parenthesis matched results are included in the array , so +,-,*,/ are included in the array
-// const expression = prompt("Enter an Operation").trim().split(regex);
-// operate(parseInt(expression[0]), parseInt(expression[2]), expression[1].trim());
+function parseInput(text) {
+    // const regex = /[+-*/]/; there is no valid character range from + to * unlike [a-z]
+    const regex = /([+/*-])/; // () using capturing parenthesis matched results are included in the array , so +,-,*,/ are included in the array
+    return text.trim().split(regex);
+}
+
+function clearDisplay() {
+    display.textContent = "";
+}
+
+function clearEntry() {
+    clearDisplay();
+}
+
+function populateDisplay(text) {
+    if (display.textContent === "00000" || isDisplayPopulated) {
+        clearDisplay();
+        isDisplayPopulated = false;
+    }
+    display.textContent += text;
+}
+
+function removeSingleCharacter() {
+    display.textContent = display.textContent.slice(
+        0,
+        display.textContent.length - 1
+    );
+}
+
+numBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+        populateDisplay(e.target.getAttribute("data-key"));
+    });
+});
+
+operatorBtns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+        populateDisplay(e.target.getAttribute("data-key"));
+    });
+});
+
+resultBtn.addEventListener("click", () => {
+    const input = parseInput(display.textContent);
+    clearDisplay();
+    if (input.length !== 3) {
+        populateDisplay("INVALID OPERATION");
+    } else {
+        populateDisplay(
+            operate(parseFloat(input[0]), parseFloat(input[2]), input[1].trim())
+        );
+    }
+    isDisplayPopulated = true;
+});
+clearBtn.addEventListener("click", clearDisplay);
+clearEntryBtn.addEventListener("click", clearEntry);
+backspaceBtn.addEventListener("click", () => {
+    if (display.textContent.length > 0) removeSingleCharacter();
+});

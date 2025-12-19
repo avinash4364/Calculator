@@ -25,6 +25,6 @@ function operate(num1, num2, operator) {
 }
 
 // const regex = /[+-*/]/; there is no valid character range from + to * unlike [a-z]
-const regex = /([+/*-])/; // () using capturing parenthesis matched results are included in the array
-const expression = prompt("Enter an Operation").trim().split(regex);
-operate(parseInt(expression[0]), parseInt(expression[2]), expression[1].trim());
+const regex = /([+/*-])/; // () using capturing parenthesis matched results are included in the array , so +,-,*,/ are included in the array
+// const expression = prompt("Enter an Operation").trim().split(regex);
+// operate(parseInt(expression[0]), parseInt(expression[2]), expression[1].trim());

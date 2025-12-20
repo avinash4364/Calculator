@@ -56,7 +56,7 @@ function clearEntry() {
 }
 
 function populateDisplay(text) {
-    if (display.textContent === "00000" || isDisplayPopulated) {
+    if (display.textContent === "00000") {
         clearDisplay();
         isDisplayPopulated = false;
     }
@@ -78,19 +78,33 @@ numBtns.forEach((btn) => {
 
 operatorBtns.forEach((btn) => {
     btn.addEventListener("click", (e) => {
-        populateDisplay(e.target.getAttribute("data-key"));
+        populateDisplay(` ${e.target.getAttribute("data-key")}  `);
     });
 });
 
 resultBtn.addEventListener("click", () => {
     const input = parseInput(display.textContent);
     clearDisplay();
-    if (input.length !== 3) {
+    if (input.length < 3) {
         populateDisplay("INVALID OPERATION");
     } else {
-        populateDisplay(
-            operate(parseFloat(input[0]), parseFloat(input[2]), input[1].trim())
-        );
+        let i = 0;
+        let j = 2;
+        let operator = 1;
+        let result;
+        while (j < input.length) {
+            let firstOperand = result === undefined ? input[i] : result;
+            result = operate(
+                parseFloat(firstOperand),
+                parseFloat(input[j]),
+                input[operator].trim()
+            );
+            j = j + 2;
+            operator = operator + 2;
+            // console.log(input);
+            console.log(result);
+        }
+        populateDisplay(result);
     }
     isDisplayPopulated = true;
 });

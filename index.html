@@ -12,7 +12,11 @@
         <header class="header"><h1 class="main-heading">Calculator</h1></header>
         <main class="calculator">
             <div class="cal-container">
-                <div class="cal-display">00000</div>
+                <div class="cal-display">
+                    <div class="cal-equation">_</div>
+                    <div class="cal-result">00000</div>
+                </div>
+
                 <div class="cal-keys">
                     <button type="button" class="btn bs-btn" data-key="bs">
                         <img
@@ -24,7 +28,11 @@
                         CE</button
                     ><button type="button" class="btn ac-btn" data-key="ac">
                         AC</button
-                    ><button type="button" class="btn opr-btn" data-key="/">
+                    ><button
+                        type="button"
+                        class="btn opr-btn"
+                        data-key="&divide;"
+                    >
                         &divide;</button
                     ><button type="button" class="btn num-btn" data-key="7">
                         7</button

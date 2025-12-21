@@ -34,12 +34,12 @@ function operate(num1, num2, operator) {
         result = add(num1, num2);
     } else if (operator === "-") {
         result = subtract(num1, num2);
-    } else if (operator === "*") {
+    } else if (operator === "×") {
         result = multiply(num1, num2);
     } else if (operator === "÷") {
         result = divide(num1, num2);
     } else {
-        populateDisplay("INVALID OPERATION", resultDisplay);
+        populateResultDisplay("INVALID OPERATION", resultDisplay);
     }
     return result;
 }
@@ -47,21 +47,21 @@ function operate(num1, num2, operator) {
 function parseInput(text) {
     let invalidKeysArray = ["", " ", "  ", "   ", "    "];
     // const regex = /[+-*/]/; there is no valid character range from + to * unlike [a-z]
-    const regex = /([*+÷-])/; // () using capturing parenthesis matched results are included in the array , so +,-,*,/ are included in the array
+    const regex = /([×+÷-])/; // () using capturing parenthesis matched results are included in the array , so +,-,*,/ are included in the array
     return text.trim().split(regex);
 }
 
 function calculateEquation() {
     const input = parseInput(eqnDisplay.textContent);
-    // console.log(input);
+    console.log(input);
     clearResultDisplay();
     if (input.length === 1) {
-        if (["*", "+", "-", "÷"].includes(input[0])) {
-            populateDisplay("INVALID OPERATION", resultDisplay);
-        } else populateDisplay(input, resultDisplay);
-    } else if (input.length === 2 || input[0] === "*" || input[0] === "÷") {
+        if (["×", "+", "-", "÷"].includes(input[0])) {
+            populateResultDisplay("INVALID OPERATION", resultDisplay);
+        } else populateResultDisplay(input, resultDisplay);
+    } else if (input.length === 2 || input[0] === "×" || input[0] === "÷") {
         clearEquationDisplay();
-        populateDisplay("INVALID OPERATION", resultDisplay);
+        populateResultDisplay("INVALID OPERATION", resultDisplay);
     } else {
         let i = 0;
         let j = 2;
@@ -83,13 +83,13 @@ function calculateEquation() {
                 operator = operator + 2;
             }
             if (result) {
-                populateDisplay(result, resultDisplay);
+                populateResultDisplay(result, resultDisplay);
             } else {
-                populateDisplay("INVALID OPERATION", resultDisplay);
+                populateResultDisplay("INVALID OPERATION", resultDisplay);
             }
         } catch (error) {
             console.log(error);
-            populateDisplay("INVALID OPERATION", resultDisplay);
+            populateResultDisplay("INVALID OPERATION", resultDisplay);
         }
     }
 }
@@ -107,12 +107,36 @@ function clearEverything() {
     resultDisplay.textContent = "00000";
 }
 
-function populateDisplay(text, displayPosition) {
-    if (displayPosition.textContent === "00000") {
-        clearResultDisplay();
+function populateEquationDisplay(e, usingKey) {
+    let space = "";
+    if (eqnDisplay.textContent === "_") eqnDisplay.textContent = "";
+    if (usingKey) {
+        let key = e.key;
+        if (key === ".") decimalBtn.disabled = true;
+        if (["+", "-", "/", "*"].includes(key)) {
+            space = " ";
+            decimalBtn.disabled = false;
+            if (key === "*") key = "×";
+            if (key === "/") key = "÷";
+        }
+        eqnDisplay.textContent += `${space}${key}${space}`;
+    } else {
+        if (e.target.value === ".") e.target.disabled = true;
+        if (["×", "+", "-", "÷"].includes(e.target.value)) {
+            space = " ";
+            decimalBtn.disabled = false;
+        }
+        eqnDisplay.textContent += `${space}${e.target.value}${space}`;
     }
+}
+
+function populateResultDisplay(text) {
+    clearResultDisplay();
     if (text === "INVALID OPERATION") clearEquationDisplay();
-    displayPosition.textContent += text;
+    resultDisplay.textContent = text;
+    if (decimalBtn.disabled) {
+        decimalBtn.disabled = false;
+    }
 }
 
 function removeSingleCharacter() {
@@ -123,35 +147,36 @@ function removeSingleCharacter() {
 }
 
 numBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-        if (eqnDisplay.textContent === "_") eqnDisplay.textContent = "";
-        populateDisplay(e.target.getAttribute("data-key"), eqnDisplay);
-    });
+    btn.addEventListener("click", populateEquationDisplay);
 });
 
-decimalBtn.addEventListener("click", (e) => {
-    if (eqnDisplay.textContent === "_") eqnDisplay.textContent = "";
-    populateDisplay(".", eqnDisplay);
-    e.target.disabled = true;
-});
+decimalBtn.addEventListener("click", populateEquationDisplay);
 
 operatorBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-        if (eqnDisplay.textContent === "_") eqnDisplay.textContent = "";
-        populateDisplay(` ${e.target.getAttribute("data-key")}  `, eqnDisplay);
-        decimalBtn.disabled = false;
-    });
+    btn.addEventListener("click", populateEquationDisplay);
 });
 
-resultBtn.addEventListener("click", () => {
-    calculateEquation();
-    if (decimalBtn.disabled) {
-        decimalBtn.disabled = false;
-    }
-});
-
+resultBtn.addEventListener("click", calculateEquation);
 clearBtn.addEventListener("click", clearEverything);
 clearEntryBtn.addEventListener("click", clearEquationDisplay);
 backspaceBtn.addEventListener("click", () => {
     if (eqnDisplay.textContent.length > 0) removeSingleCharacter();
+});
+
+// keyboard support
+window.addEventListener("keydown", (e) => {
+    // console.log(e);
+    if (
+        !isNaN(parseInt(e.key)) ||
+        e.key === "+" ||
+        e.key === "-" ||
+        e.key === "*" ||
+        e.key === "/" ||
+        e.key === "."
+    ) {
+        populateEquationDisplay(e, true);
+    } else if (e.key === "Enter" || e.key === "=") calculateEquation();
+    else if (e.code === "KeyC") clearEverything();
+    else if (e.code === "Space") clearEquationDisplay();
+    else console.log("Wrong Key Pressed");
 });

@@ -34,7 +34,7 @@ body {
     align-items: center;
     color: #a9b3b8;
     font-weight: 700;
-    border-radius: 13px;
+    border-radius: 11px;
     background-color: #363a3d;
     --shadow-color: 192deg 5% 11%;
     --shadow-elevation-low: 1px 1px 2.1px hsl(var(--shadow-color) / 0),
@@ -57,10 +57,10 @@ body {
 
 .cal-container {
     margin: 0 auto;
-    width: 48rem;
+    width: 40rem;
     display: flex;
     flex-direction: column;
-    padding: 4.8rem;
+    padding: 3.2rem;
     background-color: #4a4e4f;
     gap: 3.2rem;
     --shadow-color: 210deg 15% 6%;
@@ -73,33 +73,38 @@ body {
 }
 
 .cal-display {
-    height: 10rem;
+    /* min-height: 10rem; */
     background-color: #657167;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-end;
-    padding: 1.8rem;
+    padding: 1rem;
     font-family: "digital-7";
+    border-radius: 13px;
 }
 
 .cal-equation {
     font-size: 3.2rem;
+    min-height: 1.3em;
     align-self: flex-start;
+    display: flex;
+    align-items: center;
 }
 
 .cal-result {
-    font-size: 4.8rem;
+    font-size: 3.6rem;
+    max-height: 1.4em;
 }
 
 .cal-keys {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 2.4rem;
+    gap: 1.8rem;
 }
 
 .cal-keys .btn {
-    height: 7.2rem;
+    height: 6.4rem;
     position: relative;
     transition: all 0.1s ease;
 }

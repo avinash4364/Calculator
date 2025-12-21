@@ -53,7 +53,6 @@ function parseInput(text) {
 
 function calculateEquation() {
     const input = parseInput(eqnDisplay.textContent);
-    console.log(input);
     clearResultDisplay();
     if (input.length === 1) {
         if (["×", "+", "-", "÷"].includes(input[0])) {
@@ -107,27 +106,18 @@ function clearEverything() {
     resultDisplay.textContent = "00000";
 }
 
-function populateEquationDisplay(e, usingKey) {
+function populateEquationDisplay(e) {
     let space = "";
+    let value = e.target.value;
     if (eqnDisplay.textContent === "_") eqnDisplay.textContent = "";
-    if (usingKey) {
-        let key = e.key;
-        if (key === ".") decimalBtn.disabled = true;
-        if (["+", "-", "/", "*"].includes(key)) {
-            space = " ";
-            decimalBtn.disabled = false;
-            if (key === "*") key = "×";
-            if (key === "/") key = "÷";
-        }
-        eqnDisplay.textContent += `${space}${key}${space}`;
-    } else {
-        if (e.target.value === ".") e.target.disabled = true;
-        if (["×", "+", "-", "÷"].includes(e.target.value)) {
-            space = " ";
-            decimalBtn.disabled = false;
-        }
-        eqnDisplay.textContent += `${space}${e.target.value}${space}`;
+    if (e.target.value === ".") e.target.disabled = true;
+    if (["*", "+", "-", "/"].includes(e.target.value)) {
+        space = " ";
+        decimalBtn.disabled = false;
+        if (value === "*") value = "×";
+        if (value === "/") value = "÷";
     }
+    eqnDisplay.textContent += `${space}${value}${space}`;
 }
 
 function populateResultDisplay(text) {
@@ -164,7 +154,7 @@ backspaceBtn.addEventListener("click", () => {
 });
 
 // keyboard support
-window.addEventListener("keydown", (e) => {
+document.addEventListener("keydown", (e) => {
     // console.log(e);
     if (
         !isNaN(parseInt(e.key)) ||
@@ -174,9 +164,14 @@ window.addEventListener("keydown", (e) => {
         e.key === "/" ||
         e.key === "."
     ) {
-        populateEquationDisplay(e, true);
-    } else if (e.key === "Enter" || e.key === "=") calculateEquation();
-    else if (e.code === "KeyC") clearEverything();
-    else if (e.code === "Space") clearEquationDisplay();
+        document.querySelector(`.btn[value="${e.key}"]`).click();
+    } else if (e.key === "Enter" || e.key === "=")
+        document.querySelector(`.btn[value="="]`).click();
+    else if (e.code === "KeyC")
+        document.querySelector(`.btn[value="c"]`).click();
+    else if (e.code === "Space")
+        document.querySelector(`.btn[value="space"]`).click();
+    else if (e.code === "Backspace")
+        document.querySelector(`.btn[value="backspace"]`).click();
     else console.log("Wrong Key Pressed");
 });

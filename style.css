@@ -2,7 +2,7 @@
 
 @font-face {
     font-family: "digital-7";
-    src: url("/fonts/Digital7-rg1mL.woff2") format("woff2");
+    src: url("fonts/Digital7-rg1mL.woff2") format("woff2");
 }
 
 * {

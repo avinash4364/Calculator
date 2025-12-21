@@ -36,27 +36,30 @@ function operate(num1, num2, operator) {
     } else if (operator === "÷") {
         result = divide(num1, num2);
     } else {
-        populateResultDisplay("INVALID OPERATION", resultDisplay);
+        populateResultDisplay("INVALID OPERATION");
     }
     return result;
 }
 
 function parseInput(text) {
-    // const regex = /[+-*/]/; there is no valid character range from + to * unlike [a-z]
-    const regex = /([×+÷-])/; // () using capturing parenthesis matched results are included in the array , so +,-,*,/ are included in the array
-    return text.trim().split(regex);
+    return text.trim().split(" ");
 }
 
 function calculateEquation() {
     const input = parseInput(eqnDisplay.textContent);
+    console.log(input);
     clearResultDisplay();
     if (input.length === 1) {
         if (["×", "+", "-", "÷"].includes(input[0])) {
-            populateResultDisplay("INVALID OPERATION", resultDisplay);
-        } else populateResultDisplay(input, resultDisplay);
-    } else if (input.length === 2 || input[0] === "×" || input[0] === "÷") {
+            populateResultDisplay("INVALID OPERATION");
+        } else populateResultDisplay(input);
+    } else if (input.length === 2) {
         clearEquationDisplay();
-        populateResultDisplay("INVALID OPERATION", resultDisplay);
+        if (input[0] === "×" || input[0] === "÷") {
+            populateResultDisplay("INVALID OPERATION");
+        } else {
+            populateResultDisplay(input[1]);
+        }
     } else {
         let i = 0;
         let j = 2;
@@ -64,7 +67,7 @@ function calculateEquation() {
         let result;
         let firstOperand;
         try {
-            if (input[0] === "") input.splice(0, 1, "0"); // array is prepended with 0 when the user enter a number like -2 or +2 at the start (which is a valid syntax)
+            if (input[0] === "+" || input[0] === "-") input.unshift("0"); // array is prepended with 0 when the user enter a number like -2 or +2 at the start (which is a valid syntax)
 
             while (j < input.length) {
                 firstOperand = result === undefined ? input[i] : result;
@@ -76,7 +79,7 @@ function calculateEquation() {
                 j = j + 2;
                 operator = operator + 2;
             }
-            if (result) {
+            if (!isNaN(result) && isFinite(result)) {
                 populateResultDisplay(result, resultDisplay);
             } else {
                 populateResultDisplay("INVALID OPERATION", resultDisplay);
@@ -89,14 +92,23 @@ function calculateEquation() {
 }
 
 function clearResultDisplay() {
+    if (decimalBtn.disabled) {
+        decimalBtn.disabled = false;
+    }
     resultDisplay.textContent = "";
 }
 
 function clearEquationDisplay() {
+    if (decimalBtn.disabled) {
+        decimalBtn.disabled = false;
+    }
     eqnDisplay.textContent = "_";
 }
 
 function clearEverything() {
+    if (decimalBtn.disabled) {
+        decimalBtn.disabled = false;
+    }
     eqnDisplay.textContent = "_";
     resultDisplay.textContent = "00000";
 }
@@ -119,16 +131,12 @@ function populateResultDisplay(text) {
     clearResultDisplay();
     if (text === "INVALID OPERATION") clearEquationDisplay();
     resultDisplay.textContent = text;
-    if (decimalBtn.disabled) {
-        decimalBtn.disabled = false;
-    }
 }
 
 function removeSingleCharacter() {
-    eqnDisplay.textContent = eqnDisplay.textContent.slice(
-        0,
-        eqnDisplay.textContent.length - 1
-    );
+    let lastCharacterPos = eqnDisplay.textContent.length - 1;
+    if (eqnDisplay.textContent.at(lastCharacterPos) === " ") lastCharacterPos--;
+    eqnDisplay.textContent = eqnDisplay.textContent.slice(0, lastCharacterPos);
 }
 
 numBtns.forEach((btn) => {

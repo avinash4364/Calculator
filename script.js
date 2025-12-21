@@ -14,17 +14,14 @@ function add(num1, num2) {
 }
 
 function subtract(num1, num2) {
-    // round upto 3 places
     return Math.round((num1 - num2) * 1000) / 1000;
 }
 
 function divide(num1, num2) {
-    // round upto 3 places
     return Math.round((num1 / num2) * 1000) / 1000;
 }
 
 function multiply(num1, num2) {
-    // round upto 3 places
     return Math.round(num1 * num2 * 1000) / 1000;
 }
 
@@ -45,7 +42,6 @@ function operate(num1, num2, operator) {
 }
 
 function parseInput(text) {
-    let invalidKeysArray = ["", " ", "  ", "   ", "    "];
     // const regex = /[+-*/]/; there is no valid character range from + to * unlike [a-z]
     const regex = /([×+÷-])/; // () using capturing parenthesis matched results are included in the array , so +,-,*,/ are included in the array
     return text.trim().split(regex);
@@ -69,7 +65,6 @@ function calculateEquation() {
         let firstOperand;
         try {
             if (input[0] === "") input.splice(0, 1, "0"); // array is prepended with 0 when the user enter a number like -2 or +2 at the start (which is a valid syntax)
-            // console.log(input);
 
             while (j < input.length) {
                 firstOperand = result === undefined ? input[i] : result;
@@ -155,7 +150,6 @@ backspaceBtn.addEventListener("click", () => {
 
 // keyboard support
 document.addEventListener("keydown", (e) => {
-    // console.log(e);
     if (
         !isNaN(parseInt(e.key)) ||
         e.key === "+" ||

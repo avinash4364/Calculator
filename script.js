@@ -8,21 +8,22 @@ const decimalBtn = document.querySelector(".decimal-btn");
 const eqnDisplay = document.querySelector(".cal-equation");
 const resultDisplay = document.querySelector(".cal-result");
 
+const ROUND_UPTO = 1000; // rounds operation involving decimal upto 3 places
 function add(num1, num2) {
     // round upto 3 places
-    return Math.round((num1 + num2) * 1000) / 1000;
+    return Math.round((num1 + num2) * ROUND_UPTO) / ROUND_UPTO;
 }
 
 function subtract(num1, num2) {
-    return Math.round((num1 - num2) * 1000) / 1000;
+    return Math.round((num1 - num2) * ROUND_UPTO) / ROUND_UPTO;
 }
 
 function divide(num1, num2) {
-    return Math.round((num1 / num2) * 1000) / 1000;
+    return Math.round((num1 / num2) * ROUND_UPTO) / ROUND_UPTO;
 }
 
 function multiply(num1, num2) {
-    return Math.round(num1 * num2 * 1000) / 1000;
+    return Math.round(num1 * num2 * ROUND_UPTO) / ROUND_UPTO;
 }
 
 function operate(num1, num2, operator) {
@@ -41,41 +42,71 @@ function operate(num1, num2, operator) {
     return result;
 }
 
-function parseInput(text) {
-    return text.trim().split(" ");
+function parseValidInput(text) {
+    const regex = /([-+÷×])/;
+    return text
+        .trim()
+        .split(regex)
+        .filter((token) => token !== "");
 }
 
-function calculateEquation() {
-    const input = parseInput(eqnDisplay.textContent);
-    console.log(input);
-    clearResultDisplay();
-    if (input.length === 1) {
-        if (["×", "+", "-", "÷"].includes(input[0])) {
-            populateResultDisplay("INVALID OPERATION");
-        } else populateResultDisplay(input);
-    } else if (input.length === 2) {
-        clearEquationDisplay();
-        if (input[0] === "×" || input[0] === "÷") {
-            populateResultDisplay("INVALID OPERATION");
+function calculate(input) {
+    if (input.length <= 1) {
+        if (!isNaN(parseFloat(input[0]))) {
+            // 0,1,2,3,4,5,6,7,8,9 allowed
+
+            populateResultDisplay(input[0]);
+        } else if (input[0] === "_") return;
+        else populateResultDisplay("INVALID OPERATION");
+    } else if (input.length == 2) {
+        if (
+            input[0] === "+" ||
+            (input[0] === "-" && !isNaN(parseFloat(input[1])))
+        ) {
+            // +1,-1 allowed
+            populateResultDisplay(`${input[0] === "-" ? -input[1] : input[1]}`);
         } else {
-            populateResultDisplay(input[1]);
+            populateResultDisplay("INVALID OPERATION");
         }
     } else {
         const operatorArray = ["÷", "×", "+", "-"]; // order of operators following BODMAS rule
-        let i = 0;
-        let j = 2;
-        let operator = 1;
-        let result;
-        let firstOperand;
         try {
-            if (input[0] === "+" || input[0] === "-") input.unshift("0"); // array is prepended with 0 when the user enter a number like -2 or +2 at the start (which is a valid syntax)
+            if (input[0] === "÷" || input[0] === "×") {
+                populateResultDisplay("INVALID OPERATION");
+                return;
+            }
+
+            if (input[0] === "+" || input[0] === "-") input.unshift("0"); // makes -2+4*5 => 0-2+4*5 for our logic to work
+
+            // Edge case : 0 - 2 + 5 returns -7 which is wrong
+            // convert into 0 + (-2) + 5 returns 3
+            for (let i = 1; i < input.length; ) {
+                if (input[i] === "-") {
+                    let num = input[i + 1];
+                    input.splice(i, 2, "+", `-${num}`);
+                }
+                i = i + 2;
+            }
+
+            // check to see if user typed more than 2 numbers or 2 operators simultaneously
+            let evenPos = 0;
+            let oddPos = evenPos + 1;
+            for (let i = 1; i < (input.length + 1) / 2; i++) {
+                if (
+                    isNaN(input[evenPos]) ||
+                    !operatorArray.includes(input[oddPos])
+                ) {
+                    populateResultDisplay("INVALID OPERATION");
+                }
+                evenPos = evenPos + 2;
+                oddPos = oddPos + 2;
+            }
 
             outerLoop: for (let i = 0; i < operatorArray.length; i++) {
                 let j = 1;
                 while (j < input.length) {
                     let partialResult;
                     if (input[j] === operatorArray[i]) {
-                        console.log(input[j]);
                         partialResult = operate(
                             parseFloat(input[j - 1]),
                             parseFloat(input[j + 1]),
@@ -83,34 +114,20 @@ function calculateEquation() {
                         );
                         if (!isNaN(partialResult) && isFinite(partialResult)) {
                             input.splice(j - 1, 3, partialResult);
+                            j = j - 1;
                             if (input.length === 1) break outerLoop;
                         } else {
                             populateResultDisplay("INVALID OPERATION");
-                            break outerLoop;
+                            return;
                         }
                     }
-                    j = j + 2;
+                    j = j + 1;
                 }
             }
             populateResultDisplay(input);
-            // while (j < input.length) {
-            //     firstOperand = result === undefined ? input[i] : result;
-            //     result = operate(
-            //         parseFloat(firstOperand),
-            //         parseFloat(input[j]),
-            //         input[operator].trim()
-            //     );
-            //     j = j + 2;
-            //     operator = operator + 2;
-            // }
-            // if (!isNaN(result) && isFinite(result)) {
-            //     populateResultDisplay(result, resultDisplay);
-            // } else {
-            //     populateResultDisplay("INVALID OPERATION", resultDisplay);
-            // }
         } catch (error) {
             console.log(error);
-            populateResultDisplay("INVALID OPERATION", resultDisplay);
+            populateResultDisplay("INVALID OPERATION");
         }
     }
 }
@@ -138,7 +155,6 @@ function clearEverything() {
 }
 
 function populateEquationDisplay(e) {
-    let space = "";
     let value = e.target.value;
     if (eqnDisplay.textContent === "_") eqnDisplay.textContent = "";
     if (e.target.value === ".") e.target.disabled = true;
@@ -148,7 +164,7 @@ function populateEquationDisplay(e) {
         if (value === "*") value = "×";
         if (value === "/") value = "÷";
     }
-    eqnDisplay.textContent += `${space}${value}${space}`;
+    eqnDisplay.textContent += value;
 }
 
 function populateResultDisplay(text) {
@@ -159,7 +175,6 @@ function populateResultDisplay(text) {
 
 function removeSingleCharacter() {
     let lastCharacterPos = eqnDisplay.textContent.length - 1;
-    if (eqnDisplay.textContent.at(lastCharacterPos) === " ") lastCharacterPos--;
     eqnDisplay.textContent = eqnDisplay.textContent.slice(0, lastCharacterPos);
 }
 
@@ -173,7 +188,10 @@ operatorBtns.forEach((btn) => {
     btn.addEventListener("click", populateEquationDisplay);
 });
 
-resultBtn.addEventListener("click", calculateEquation);
+resultBtn.addEventListener("click", () => {
+    const expression = parseValidInput(eqnDisplay.textContent);
+    calculate(expression);
+});
 clearBtn.addEventListener("click", clearEverything);
 clearEntryBtn.addEventListener("click", clearEquationDisplay);
 backspaceBtn.addEventListener("click", () => {
@@ -199,5 +217,4 @@ document.addEventListener("keydown", (e) => {
         document.querySelector(`.btn[value="space"]`).click();
     else if (e.code === "Backspace")
         document.querySelector(`.btn[value="backspace"]`).click();
-    else console.log("Wrong Key Pressed");
 });

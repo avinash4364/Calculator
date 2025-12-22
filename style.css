@@ -93,6 +93,7 @@ body {
 .cal-equation {
     font-size: 3.2rem;
     min-height: 1.3em;
+    letter-spacing: 1.1px;
     align-self: flex-start;
     display: flex;
     align-items: center;

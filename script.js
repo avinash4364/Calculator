@@ -10,7 +10,6 @@ const resultDisplay = document.querySelector(".cal-result");
 
 const ROUND_UPTO = 1000; // rounds operation involving decimal upto 3 places
 function add(num1, num2) {
-    // round upto 3 places
     return Math.round((num1 + num2) * ROUND_UPTO) / ROUND_UPTO;
 }
 

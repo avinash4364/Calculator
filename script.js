@@ -61,6 +61,7 @@ function calculateEquation() {
             populateResultDisplay(input[1]);
         }
     } else {
+        const operatorArray = ["÷", "×", "+", "-"]; // order of operators following BODMAS rule
         let i = 0;
         let j = 2;
         let operator = 1;
@@ -69,21 +70,44 @@ function calculateEquation() {
         try {
             if (input[0] === "+" || input[0] === "-") input.unshift("0"); // array is prepended with 0 when the user enter a number like -2 or +2 at the start (which is a valid syntax)
 
-            while (j < input.length) {
-                firstOperand = result === undefined ? input[i] : result;
-                result = operate(
-                    parseFloat(firstOperand),
-                    parseFloat(input[j]),
-                    input[operator].trim()
-                );
-                j = j + 2;
-                operator = operator + 2;
+            outerLoop: for (let i = 0; i < operatorArray.length; i++) {
+                let j = 1;
+                while (j < input.length) {
+                    let partialResult;
+                    if (input[j] === operatorArray[i]) {
+                        console.log(input[j]);
+                        partialResult = operate(
+                            parseFloat(input[j - 1]),
+                            parseFloat(input[j + 1]),
+                            input[j].trim()
+                        );
+                        if (!isNaN(partialResult) && isFinite(partialResult)) {
+                            input.splice(j - 1, 3, partialResult);
+                            if (input.length === 1) break outerLoop;
+                        } else {
+                            populateResultDisplay("INVALID OPERATION");
+                            break outerLoop;
+                        }
+                    }
+                    j = j + 2;
+                }
             }
-            if (!isNaN(result) && isFinite(result)) {
-                populateResultDisplay(result, resultDisplay);
-            } else {
-                populateResultDisplay("INVALID OPERATION", resultDisplay);
-            }
+            populateResultDisplay(input);
+            // while (j < input.length) {
+            //     firstOperand = result === undefined ? input[i] : result;
+            //     result = operate(
+            //         parseFloat(firstOperand),
+            //         parseFloat(input[j]),
+            //         input[operator].trim()
+            //     );
+            //     j = j + 2;
+            //     operator = operator + 2;
+            // }
+            // if (!isNaN(result) && isFinite(result)) {
+            //     populateResultDisplay(result, resultDisplay);
+            // } else {
+            //     populateResultDisplay("INVALID OPERATION", resultDisplay);
+            // }
         } catch (error) {
             console.log(error);
             populateResultDisplay("INVALID OPERATION", resultDisplay);

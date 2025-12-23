@@ -1,4 +1,4 @@
-const calculate = require("./calculator");
+import { calculate } from "./calculator.js";
 
 describe("Calculator Stress Test", () => {
     const testCases = [

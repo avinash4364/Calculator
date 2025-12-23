@@ -1,4 +1,4 @@
-const ROUND_UPTO = 100000000;
+const ROUND_UPTO = 100000000; // rounds upto 8 places
 
 function add(num1, num2) {
     return Math.round((num1 + num2) * ROUND_UPTO) / ROUND_UPTO;
@@ -32,10 +32,10 @@ function operate(num1, num2, operator) {
     return result;
 }
 
-function calculate(input) {
-    console.log(input);
+export function calculate(input) {
     if (input.length <= 1) {
         if (!isNaN(parseFloat(input[0]))) {
+            // 0,1,2,3,4,5,6,7,8,9 allowed
             return input[0];
         } else return "INVALID OPERATION";
     } else if (input.length == 2) {
@@ -43,17 +43,20 @@ function calculate(input) {
             input[0] === "+" ||
             (input[0] === "-" && !isNaN(parseFloat(input[1])))
         ) {
-            return `${input[0] === "-" ? -input[1] : input[1]}`;
+            return `${input[0] === "-" ? -input[1] : input[1]}`; // +1,-1 allowed
         } else {
             return "INVALID OPERATION";
         }
     } else {
-        const operatorArray = ["/", "*", "+", "-"];
+        const operatorArray = ["/", "*", "+", "-"]; // order of operators following BODMAS rule
         if (input[0] === "/" || input[0] === "*") {
             return "INVALID OPERATION";
         }
 
         if (input[0] === "+" || input[0] === "-") input.unshift("0");
+
+        // Edge case : 0 - 2 + 5 returns -7 which is wrong
+        // convert into 0 + (-2) + 5 returns 3
         for (let i = 1; i < input.length; ) {
             if (input[i] === "-") {
                 let num = input[i + 1];
@@ -62,6 +65,7 @@ function calculate(input) {
             i = i + 2;
         }
 
+        // check to see if user typed more than 2 numbers or 2 operators simultaneously
         let evenPos = 0;
         let oddPos = evenPos + 1;
         for (let i = 1; i < (input.length + 1) / 2; i++) {
@@ -99,9 +103,3 @@ function calculate(input) {
         return input[0];
     }
 }
-
-if (typeof module !== "undefined") {
-    module.exports = calculate;
-}
-
-module.exports = calculate;

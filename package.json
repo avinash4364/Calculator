@@ -4,7 +4,7 @@
     "description": "The Odin Project Foundations Course Milestone Project",
     "main": "script.js",
     "scripts": {
-        "test": "jest"
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
     },
     "repository": {
         "type": "git",
@@ -13,7 +13,7 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "type": "commonjs",
+    "type": "module",
     "bugs": {
         "url": "https://github.com/avinash4364/Calculator/issues"
     },

@@ -41,12 +41,23 @@ npm test
 -   **Algorithm:** Implemented logic to convert infix expressions to a valid result.
 -   **Validation:** Built a defensive validation layer that checks for "Impossible States" (e.g., consecutive numbers like `["10", "20"]`) before attempting calculation.
 -   **Module System:** Built using **CommonJS** for seamless integration with Node.js testing environments.
+-   **Keyboard Support:** Used EventListeners to map specific keys to their corresponding click handlers.
 
 ## 🧠 What I Learned
 
 -   **Defensive Programming:** How to handle "impossible" user inputs even if the UI prevents them.
 -   **Benefits of writing tests:** Writing tests and building logic to pass them.
--   **CSS Box Shadow:** Using box-shadow inset value to make a button look like pressed
+-   **CSS Box Shadow:** Using box-shadow inset value to make a button look like pressed.
+-   **Abstracting Logic:** Separating the math "engine" from the UI "body" to make the code maintainable.
+
+---
+
+## 🚀 Future Roadmap
+
+-   **Parenthesis `( )` and Exponential `^` support** using Shunting Yard Algorithm.
+-   **Precedence Update:** Exponentials () have higher precedence than multiplication.
+-   **Right-Associativity:** Unlike addition, exponentials are "Right-Associative" (evaluated right-to-left), requiring a specific flag in the Shunting-Yard logic.
+-   **Square Root:** Handled as a "Function" token rather than a standard operator.
 
 ---
 
